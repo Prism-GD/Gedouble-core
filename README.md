@@ -14,7 +14,7 @@ Gedouble is a companion launcher and management interface for the Noahh Geometry
 ## Responsibilities
 
 - Inspect Noahh mod metadata using Noahh's `mod.json` format.
-- Enumerate installed `.noahh` package files in a directory selected/provided by the Android app.
+- Enumerate, install, and remove `.noahh` package files in a directory selected/provided by the Android app.
 - Provide integration helpers for the Gedouble Android launcher.
 - Leave game launching, hooks, mod loading, and runtime behavior to Noahh.
 
@@ -28,7 +28,7 @@ Android/media/com.noahh.launcher/game/noahh/mods/
 
 The app must obtain filesystem access through Android's supported storage APIs and pass an accessible directory path to the native core. Do not assume that a hard-coded path is accessible under Android scoped-storage rules.
 
-Noahh packages use the `.noahh` extension. This core can currently enumerate package files and their sizes; it does not unpack, install, enable, disable, or execute packages. The in-game loader remains responsible for execution.
+Noahh packages use the `.noahh` extension. This core can enumerate package files, copy a selected `.noahh` package into the mods directory without overwriting an existing file, and remove a package by its exact filename. It does not unpack or execute packages, and it does not change Noahh's internal enable/disable state. The in-game loader remains responsible for execution.
 
 Noahh mod projects use `mod.json`, with metadata including `noahh`, `gd.android`, `id`, `name`, `version`, and `developer` or `developers`. The metadata reader supports these fields for a project or unpacked mod folder.
 
