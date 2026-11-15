@@ -1,6 +1,6 @@
 # Gedouble-Core
 
-**The native C++ runtime and mod loader for Gedouble.**
+**The native C++ runtime and mod-loader foundation for Gedouble.**
 
 Gedouble-Core is an independent Android native component intended to provide the runtime foundation for loading and managing Geometry Dash mods.
 
@@ -9,23 +9,25 @@ Gedouble-Core is an independent Android native component intended to provide the
 - Android only.
 - Initial target: Geometry Dash 2.2081.
 - ABIs: `armeabi-v7a` and `arm64-v8a`.
-- Primary language: C++.
-- Assembly: optional and limited to cases where low-level integration genuinely requires it.
+- Primary language: C++20.
 - Build system: CMake + Android NDK.
 
-## Planned components
+## Implemented foundation
 
-- Native library entry point and Android/JNI bridge.
-- Runtime and game-version detection.
-- Compatibility layer for supported game builds.
-- Hooking and symbol-resolution abstractions.
-- Mod discovery, dependency metadata, and lifecycle management.
-- Logging, diagnostics, and crash-safe failure handling.
-- Integration contract with Gedouble-SDK.
+- Runtime initialization and shutdown.
+- Thread-safe runtime state.
+- Host-provided logging callback.
+- Native module registration and duplicate-ID rejection.
+- Module load/unload callbacks.
+- Reverse-order module unloading during runtime shutdown.
+- Android NDK CI build for both target ABIs.
 
-## Development status
+This is an initial runtime foundation, **not yet a Geometry Dash injector or a complete mod loader**. It does not currently discover mod packages, parse manifests, resolve dependencies, install game hooks, or integrate with the game's process.
 
-This repository starts with a minimal native library and CI build. **No game hooks, injection, mod loading, or Geometry Dash integration are implemented yet.** Those features require careful reverse engineering, device testing, and version-specific validation.
+## Public headers
+
+- `native/include/gedouble/core.hpp` — runtime lifecycle and logging.
+- `native/include/gedouble/module.hpp` — native module lifecycle API.
 
 ## Build
 
@@ -48,7 +50,7 @@ Use `armeabi-v7a` for the 32-bit build.
 
 ## Legal
 
-Geometry Dash is proprietary software. This project does not include or distribute the game or its assets. Any compatibility work must respect applicable law and third-party licenses.
+Geometry Dash is proprietary software. This project does not include or distribute the game or its assets. Any compatibility work must respect applicable law and third-party licenses. The project is independent and is not affiliated with or endorsed by RobTop Games.
 
 ## License
 
