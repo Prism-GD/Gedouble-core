@@ -229,6 +229,77 @@ bool read_noahh_mod_json(const char* path, NoahhModMetadata* output,
     }
 }
 
+
+bool install_noahh_package(const char* package_file, const char* mods_directory,
+                           char* error_buffer, std::size_t error_buffer_size) noexcept {
+    if (package_file == nullptr || mods_directory == nullptr) {
+        set_error(error_buffer, error_buffer_size, "invalid argument");
+        return false;
+    }
+    try {
+        const std::filesystem::path source(package_file);
+        const std::filesystem::path destination_root(mods_directory);
+        if (source.extension() != ".noahh" || !std::filesystem::is_regular_file(source)) {
+            set_error(error_buffer, error_buffer_size, "source must be a .noahh package file");
+            return false;
+        }
+        if (!std::filesystem::is_directory(destination_root)) {
+            set_error(error_buffer, error_buffer_size, "Noahh mods directory is unavailable");
+            return false;
+        }
+        const auto destination = destination_root / source.filename();
+        if (std::filesystem::exists(destination)) {
+            set_error(error_buffer, error_buffer_size, "a package with this filename already exists");
+            return false;
+        }
+        std::error_code ec;
+        if (!std::filesystem::copy_file(source, destination,
+                std::filesystem::copy_options::none, ec) || ec) {
+            set_error(error_buffer, error_buffer_size, "could not copy Noahh package");
+            return false;
+        }
+        set_error(error_buffer, error_buffer_size, "");
+        return true;
+    } catch (...) {
+        set_error(error_buffer, error_buffer_size, "unexpected error installing Noahh package");
+        return false;
+    }
+}
+
+bool remove_noahh_package(const char* mods_directory, const char* package_filename,
+                          char* error_buffer, std::size_t error_buffer_size) noexcept {
+    if (mods_directory == nullptr || package_filename == nullptr) {
+        set_error(error_buffer, error_buffer_size, "invalid argument");
+        return false;
+    }
+    try {
+        const std::string filename(package_filename);
+        if (filename.empty() || filename == "." || filename == ".."
+            || filename.find('/') != std::string::npos
+            || filename.find('\\\\') != std::string::npos
+            || std::filesystem::path(filename).filename() != filename
+            || std::filesystem::path(filename).extension() != ".noahh") {
+            set_error(error_buffer, error_buffer_size, "invalid Noahh package filename");
+            return false;
+        }
+        const auto target = std::filesystem::path(mods_directory) / filename;
+        if (!std::filesystem::is_regular_file(target)) {
+            set_error(error_buffer, error_buffer_size, "Noahh package was not found");
+            return false;
+        }
+        std::error_code ec;
+        if (!std::filesystem::remove(target, ec) || ec) {
+            set_error(error_buffer, error_buffer_size, "could not remove Noahh package");
+            return false;
+        }
+        set_error(error_buffer, error_buffer_size, "");
+        return true;
+    } catch (...) {
+        set_error(error_buffer, error_buffer_size, "unexpected error removing Noahh package");
+        return false;
+    }
+}
+
 bool scan_noahh_packages(const char* directory, NoahhPackageInfo* output,
                          std::size_t capacity, std::size_t* package_count) noexcept {
     if (package_count != nullptr) *package_count = 0;
