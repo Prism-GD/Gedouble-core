@@ -1,76 +1,57 @@
 # Gedouble-Core
 
-**The native C++ runtime and mod-loader foundation for Gedouble.**
+**The Android integration core for the Gedouble launcher and Noahh.**
 
-Gedouble-Core is an independent Android native component intended to provide the runtime foundation for loading and managing Geometry Dash mods.
+Gedouble is a companion launcher and management interface for the Noahh Geometry Dash mod loader. Noahh remains responsible for game modification, hooks, mod execution, and its own runtime. Gedouble does not reimplement or replace those systems.
 
 ## Targets
 
-- Android only.
-- Initial target: Geometry Dash 2.2081.
-- ABIs: `armeabi-v7a` and `arm64-v8a`.
-- Primary language: C++20.
-- Build system: CMake + Android NDK.
+- Android companion application.
+- Initial game target: Geometry Dash 2.2081 (Noahh compatibility must be confirmed separately).
+- Android ABIs: `armeabi-v7a` and `arm64-v8a`.
+- Native component: C++20, built with CMake and Android NDK.
 
-## Implemented foundation
+## Responsibilities
 
-- Runtime initialization and shutdown.
-- Thread-safe runtime state and host-provided logging callback.
-- Native module registration, duplicate-ID rejection, and lifecycle callbacks.
-- Reverse-order module unloading during runtime shutdown.
-- `manifest.json` parsing with required-field and path validation.
-- Discovery of mod folders containing valid manifests.
-- Android NDK CI build configured for both target ABIs.
+- Inspect Noahh mod metadata using Noahh's `mod.json` format.
+- Enumerate installed `.noahh` package files in a directory selected/provided by the Android app.
+- Provide integration helpers for the Gedouble Android launcher.
+- Leave game launching, hooks, mod loading, and runtime behavior to Noahh.
 
-## Mod manifest format
+## Noahh compatibility
 
-Each mod gets its own folder under the configured mods directory, containing a `manifest.json` file:
+Noahh's Android documentation identifies this shared-storage mods directory:
 
-```json
-{
-  "id": "com.example.hello",
-  "name": "Hello Mod",
-  "version": "1.0.0",
-  "entry": "libhello.so",
-  "description": "An example Gedouble mod"
-}
+```text
+Android/media/com.noahh.launcher/game/noahh/mods/
 ```
 
-Required fields are `id`, `name`, `version`, and `entry`. The entry path must be relative and cannot contain parent-directory traversal. Unknown JSON fields are ignored. Discovery only reads metadata; it does **not** load or execute the entry file.
+The app must obtain filesystem access through Android's supported storage APIs and pass an accessible directory path to the native core. Do not assume that a hard-coded path is accessible under Android scoped-storage rules.
+
+Noahh packages use the `.noahh` extension. This core can currently enumerate package files and their sizes; it does not unpack, install, enable, disable, or execute packages. The in-game loader remains responsible for execution.
+
+Noahh mod projects use `mod.json`, with metadata including `noahh`, `gd.android`, `id`, `name`, `version`, and `developer` or `developers`. The metadata reader supports these fields for a project or unpacked mod folder.
 
 ## Public headers
 
 - `native/include/gedouble/core.hpp` — runtime lifecycle and logging.
-- `native/include/gedouble/module.hpp` — native module lifecycle API.
-- `native/include/gedouble/manifest.hpp` — manifest parsing and mod-folder discovery.
-
-## Current limitations
-
-This is not yet a Geometry Dash injector or a complete mod loader. It does not load native libraries, resolve dependencies, install game hooks, or integrate with the game's process. Those steps require explicit compatibility design and device validation.
+- `native/include/gedouble/noahh.hpp` — Noahh metadata and package discovery.
 
 ## Build
 
-The GitHub Actions workflow builds both Android ABIs with the Android NDK. For a local build with an installed Android NDK:
+GitHub Actions builds the native library for `armeabi-v7a` and `arm64-v8a` using the Android NDK.
 
-```sh
-cmake -S . -B build \
-  -DCMAKE_TOOLCHAIN_FILE="$ANDROID_NDK/build/cmake/android.toolchain.cmake" \
-  -DANDROID_ABI=arm64-v8a \
-  -DANDROID_PLATFORM=android-23
-cmake --build build --config Release
-```
-
-Use `armeabi-v7a` for the 32-bit build.
-
-## Related repositories
+## Related projects
 
 - [Gedouble launcher](https://github.com/Prism-GD/Gedouble)
 - [Gedouble-SDK](https://github.com/Prism-GD/Gedouble-SDK)
+- [Noahh website](https://www.noahh-sdk.org/)
+- [Noahh documentation](https://docs.noahh-sdk.org/)
 
-## Legal
+## Legal and licensing
 
-Geometry Dash is proprietary software. This project does not include or distribute the game or its assets. Any compatibility work must respect applicable law and third-party licenses. The project is independent and is not affiliated with or endorsed by RobTop Games.
+Noahh is an independent open-source project. Gedouble is a separate companion project and is not affiliated with or endorsed by the Noahh team or RobTop Games. Respect Noahh's license and third-party licenses when integrating or redistributing any components.
 
-## License
+Geometry Dash is proprietary software. Gedouble does not include or distribute the game or its assets.
 
-A project license has not yet been selected. Until one is added, do not assume that the repository is licensed for reuse or redistribution.
+A license for Gedouble-Core has not yet been selected. Do not assume it is licensed for reuse or redistribution.
