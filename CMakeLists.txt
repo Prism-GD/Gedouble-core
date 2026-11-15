@@ -4,6 +4,7 @@ project(gedouble_core LANGUAGES CXX)
 add_library(gedouble SHARED
     native/src/gedouble_core.cpp
     native/src/module_manager.cpp
+    native/src/manifest.cpp
 )
 
 target_include_directories(gedouble
