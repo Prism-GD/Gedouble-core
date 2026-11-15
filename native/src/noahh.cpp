@@ -323,7 +323,7 @@ bool scan_noahh_packages(const char* directory, NoahhPackageInfo* output,
             }
             ++found;
         }
-        *package_count = std::min(found, capacity);
+        *package_count = found;
         return !ec;
     } catch (...) { return false; }
 }
