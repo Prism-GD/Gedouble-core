@@ -30,6 +30,22 @@ GEDOUBLE_EXPORT bool read_noahh_mod_json(
     std::size_t error_buffer_size
 ) noexcept;
 
+/// Copies a .noahh package into the supplied mods directory without overwriting.
+GEDOUBLE_EXPORT bool install_noahh_package(
+    const char* package_file,
+    const char* mods_directory,
+    char* error_buffer,
+    std::size_t error_buffer_size
+) noexcept;
+
+/// Removes one package by filename (not an arbitrary path).
+GEDOUBLE_EXPORT bool remove_noahh_package(
+    const char* mods_directory,
+    const char* package_filename,
+    char* error_buffer,
+    std::size_t error_buffer_size
+) noexcept;
+
 /// Lists .noahh package files in a directory. Does not extract or execute them.
 GEDOUBLE_EXPORT bool scan_noahh_packages(
     const char* mods_directory,
