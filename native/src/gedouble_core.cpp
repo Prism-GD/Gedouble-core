@@ -1,5 +1,4 @@
 #include "gedouble/core.hpp"
-#include "module_manager_internal.hpp"
 
 #include <atomic>
 #include <mutex>
@@ -29,7 +28,6 @@ void shutdown() noexcept {
         return;
     }
 
-    detail::unload_all_modules();
     log(LogLevel::info, "Gedouble-Core runtime shut down");
 }
 
