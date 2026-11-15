@@ -25,7 +25,7 @@ GEDOUBLE_EXPORT const char* version() noexcept;
 /// Initializes the Gedouble native runtime. Safe to call more than once.
 GEDOUBLE_EXPORT bool initialize() noexcept;
 
-/// Shuts down the runtime and unloads registered modules in reverse order.
+/// Shuts down the Gedouble integration runtime.
 GEDOUBLE_EXPORT void shutdown() noexcept;
 
 /// Returns whether the runtime is currently initialized.
