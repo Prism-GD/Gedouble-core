@@ -15,19 +15,38 @@ Gedouble-Core is an independent Android native component intended to provide the
 ## Implemented foundation
 
 - Runtime initialization and shutdown.
-- Thread-safe runtime state.
-- Host-provided logging callback.
-- Native module registration and duplicate-ID rejection.
-- Module load/unload callbacks.
+- Thread-safe runtime state and host-provided logging callback.
+- Native module registration, duplicate-ID rejection, and lifecycle callbacks.
 - Reverse-order module unloading during runtime shutdown.
-- Android NDK CI build for both target ABIs.
+- `manifest.json` parsing with required-field and path validation.
+- Discovery of mod folders containing valid manifests.
+- Android NDK CI build configured for both target ABIs.
 
-This is an initial runtime foundation, **not yet a Geometry Dash injector or a complete mod loader**. It does not currently discover mod packages, parse manifests, resolve dependencies, install game hooks, or integrate with the game's process.
+## Mod manifest format
+
+Each mod gets its own folder under the configured mods directory, containing a `manifest.json` file:
+
+```json
+{
+  "id": "com.example.hello",
+  "name": "Hello Mod",
+  "version": "1.0.0",
+  "entry": "libhello.so",
+  "description": "An example Gedouble mod"
+}
+```
+
+Required fields are `id`, `name`, `version`, and `entry`. The entry path must be relative and cannot contain parent-directory traversal. Unknown JSON fields are ignored. Discovery only reads metadata; it does **not** load or execute the entry file.
 
 ## Public headers
 
 - `native/include/gedouble/core.hpp` — runtime lifecycle and logging.
 - `native/include/gedouble/module.hpp` — native module lifecycle API.
+- `native/include/gedouble/manifest.hpp` — manifest parsing and mod-folder discovery.
+
+## Current limitations
+
+This is not yet a Geometry Dash injector or a complete mod loader. It does not load native libraries, resolve dependencies, install game hooks, or integrate with the game's process. Those steps require explicit compatibility design and device validation.
 
 ## Build
 
