@@ -59,21 +59,25 @@ bool unregister_module(const char* id) noexcept {
     }
 
     void (*unload)() noexcept = nullptr;
+    bool found = false;
     {
         std::lock_guard<std::mutex> lock(g_modules_mutex);
         for (auto it = g_modules.begin(); it != g_modules.end(); ++it) {
             if (it->id == id) {
                 unload = it->on_unload;
                 g_modules.erase(it);
+                found = true;
                 break;
             }
         }
     }
 
-    if (unload == nullptr) {
+    if (!found) {
         return false;
     }
-    unload();
+    if (unload != nullptr) {
+        unload();
+    }
     log(LogLevel::info, "Native module unregistered");
     return true;
 }
