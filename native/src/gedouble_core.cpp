@@ -5,7 +5,7 @@
 
 namespace gedouble {
 namespace {
-constexpr char kVersion[] = "0.2.0-dev";
+constexpr char kVersion[] = "0.3.0-dev";
 std::atomic_bool g_initialized{false};
 std::mutex g_log_mutex;
 LogCallback g_log_callback = nullptr;
